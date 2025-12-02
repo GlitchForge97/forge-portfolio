@@ -17,6 +17,43 @@ const defaultConfig = {
   font_size: 16
 };
 
+// Mobile Desktop Mode Warning
+function setupMobileWarning() {
+  const isMobile = () => {
+    return window.innerWidth < 1024 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  };
+
+  const showWarning = () => {
+    if (isMobile()) {
+      const warning = document.querySelector('.mobile-warning');
+      if (warning) {
+        warning.classList.add('show');
+        
+        // Add close button functionality
+        const closeBtn = warning.querySelector('button');
+        if (closeBtn) {
+          closeBtn.addEventListener('click', () => {
+            warning.classList.remove('show');
+            localStorage.setItem('warningDismissed', 'true');
+          });
+        }
+      }
+    }
+  };
+
+  // Check if warning was previously dismissed
+  if (localStorage.getItem('warningDismissed') !== 'true') {
+    showWarning();
+  }
+
+  // Check on resize
+  window.addEventListener('resize', () => {
+    if (!localStorage.getItem('warningDismissed')) {
+      showWarning();
+    }
+  });
+}
+
 // Create enhanced floating particles
 function createParticles() {
   const particlesContainer = document.getElementById('particles');
@@ -306,6 +343,7 @@ function mapToEditPanelValues(config) {
 
 // Initialize everything
 document.addEventListener('DOMContentLoaded', () => {
+  setupMobileWarning();
   createParticles();
   setupScrollAnimations();
   setupSmoothScrolling();
